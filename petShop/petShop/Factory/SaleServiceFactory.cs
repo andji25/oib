@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using petShop.Model;
 using petShop.Services;
-using petShop.Model;
+using System;
+using System.Collections.Generic;
 
 public static class SalesServiceFactory
 {
