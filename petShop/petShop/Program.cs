@@ -3,6 +3,7 @@ using System.Data;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using petShop.Model;
+using petShop.Services;
 
 class Program
 {
@@ -10,18 +11,18 @@ class Program
     {
         try
         {
-            var logger = new LoggingService();
+            var logger = new FileLogService();
 
             var userRepo = new JsonRepository<User>("Data/users.json");
             var petRepo = new JsonRepository<Pet>("Data/pets.json");
-            var receiptRepo = new JsonRepository<FiscalReceipt>("Data/receipts.json");
+            var receiptRepo = new JsonRepository<Receipt>("Data/receipts.json");
 
-            InitDataService.InitUsers(userRepo);
-            InitDataService.InitPets(petRepo);
+// InitDataService.InitUsers(userRepo);
+// InitDataService.InitPets(petRepo);
 
             var auth = new AuthService(userRepo, logger);
             var petService = new PetService(petRepo, logger);
-            var fiscal = new FiscalService(receiptRepo, petRepo, logger);
+            var fiscal = new SalesService(receiptRepo, petRepo, logger);
 
             Console.Write("Username: ");
             var u = Console.ReadLine();
@@ -42,7 +43,7 @@ class Program
         }
         catch (Exception ex)
         {
-            File.AppendAllText("Data/log.txt", ex + "\n");
+            FileLogService.AppendAllText("Data/log.txt", ex + "\n");
             Console.WriteLine("❌ Greška u radu aplikacije.");
         }
     }
@@ -71,7 +72,7 @@ class Program
         }
     }
 
-    static void SellerMenu(PetService petService, FiscalService fiscal, string seller)
+    static void SellerMenu(PetService petService, SalesService fiscal, string seller)
     {
         try
         {
@@ -91,7 +92,7 @@ class Program
             fiscal.Sell(
                 pets[choice].Id,
                 seller,
-                SalesFactory.GetCurrent()
+                SaleServiceFactory.GetCurrent()
             );
 
             Console.WriteLine("✅ Prodaja uspešna.");
