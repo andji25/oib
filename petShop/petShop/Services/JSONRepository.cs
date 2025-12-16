@@ -57,7 +57,7 @@ public class JsonRepository<T> : IRepository<T> where T : class
     {
         File.WriteAllText(
             _path,
-            JsonConvert.SerializeObject(list, Formatting.Indented)
+            JsonConvert.SerializeObject(list, System.Xml.Formatting.Indented)
         );
     }
 }

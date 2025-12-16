@@ -1,27 +1,40 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using petShop.Model;
+using petShop.Services;
 
-public class PetService
+public class PetService : IPetService
 {
-    private IRepository<Pet> _repo;
-    private LoggingService _logger;
-
-    public PetService(IRepository<Pet> repo, LoggingService logger)
-    {
-        _repo = repo;
-        _logger = logger;
-    }
-
+    private const int MaxPets = 10;
+    private readonly List<Pet> pets = new List<Pet>();
     public void AddPet(Pet pet)
     {
-        if (_repo.GetAll().Count() >= 10)
-            throw new System.Exception("U prodavnici može biti max 10 ljubimaca.");
+        if (Session.CurrentUser == null)
+            throw new UnauthorizedAccessException();
 
-        _repo.Add(pet);
-        _logger.Log("Added pet: " + pet.Name);
+        if (Session.CurrentUser.Role != Role.Manager)
+            throw new UnauthorizedAccessException("Only manager can add pets.");
+
+        if (pets.Count >= MaxPets)
+            throw new InvalidOperationException("Pet shop is full.");
+
+        pets.Add(pet);
     }
 
-    public IEnumerable<Pet> GetAll() => _repo.GetAll();
-    public IEnumerable<Pet> GetAvailable() => _repo.GetAll().Where(p => !p.Sold);
+    public IReadOnlyCollection<Pet> GetAllPets()
+    {
+        if (Session.CurrentUser == null)
+            throw new UnauthorizedAccessException();
+
+        return pets.AsReadOnly();
+    }
+
+    public IReadOnlyCollection<Pet> GetAvailablePets()
+    {
+        if (Session.CurrentUser == null)
+            throw new UnauthorizedAccessException();
+
+        return pets.Where(p => !p.Sold).ToList();
+    }
 }

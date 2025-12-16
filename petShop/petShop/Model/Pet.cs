@@ -1,13 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace petShop.Model
 {
     public class Pet
     {
+        public Guid Id { get; private set; }
+        public string LatinName { get; private set; }
+        public string Name { get; private set; }
+        public Species Species { get; private set; }
+        public int SellingPrice { get; private set; }
+        public bool Sold { get; private set; }
 
+        public Pet(string latinName, string name, Species species, int sellingPrice)
+        {
+            Id = Guid.NewGuid();
+            LatinName = latinName;
+            Name = name;
+            Species = species;
+            SellingPrice = sellingPrice;
+            Sold = false;
+        }
+        public void MarkAsSold() { Sold = true; }
     }
 }
