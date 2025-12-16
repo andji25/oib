@@ -8,10 +8,10 @@ namespace petShop.Model
         public string LatinName { get; private set; }
         public string Name { get; private set; }
         public Species Species { get; private set; }
-        public int SellingPrice { get; private set; }
+        public decimal SellingPrice { get; private set; }
         public bool Sold { get; private set; }
 
-        public Pet(string latinName, string name, Species species, int sellingPrice)
+        public Pet(string latinName, string name, Species species, decimal sellingPrice)
         {
             Id = Guid.NewGuid();
             LatinName = latinName;

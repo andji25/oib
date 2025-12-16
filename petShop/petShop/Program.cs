@@ -1,105 +1,69 @@
-﻿using System;
-using System.Data;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using petShop.Model;
+﻿using petShop.Model;
+using petShop.Repository;
 using petShop.Services;
+using System;
+using System.Linq;
 
 class Program
 {
     static void Main()
     {
+        IPetRepository petRepo = new JsonPetRepository();
+        IReceiptRepository receiptRepo = new JsonReceiptRepository();
+
+        ILogService logService = new FileLogService();
+
+        IPetService petService = new PetService(petRepo, logService);
+
+        ISalesService salesService = SalesServiceFactory.Create(receiptRepo, logService);
+        User manager = new User("manager1", "pass123", "Milan", "Markovic", Role.Manager);
+        User seller = new User("seller1", "pass123", "Jovana", "Jovic", Role.Seller);
+
+        Session.CurrentUser = manager;
+
         try
         {
-            var logger = new FileLogService();
+            petService.AddPet(new Pet("Felis catus", "Maca", Species.Mammal, 100));
+            petService.AddPet(new Pet("Canis lupus familiaris", "Pas", Species.Mammal, 200));
+            Console.WriteLine("Manager added pets successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
 
-            var userRepo = new JsonRepository<User>("Data/users.json");
-            var petRepo = new JsonRepository<Pet>("Data/pets.json");
-            var receiptRepo = new JsonRepository<Receipt>("Data/receipts.json");
+        Session.CurrentUser = seller;
 
-// InitDataService.InitUsers(userRepo);
-// InitDataService.InitPets(petRepo);
-
-            var auth = new AuthService(userRepo, logger);
-            var petService = new PetService(petRepo, logger);
-            var fiscal = new SalesService(receiptRepo, petRepo, logger);
-
-            Console.Write("Username: ");
-            var u = Console.ReadLine();
-            Console.Write("Password: ");
-            var p = Console.ReadLine();
-
-            var user = auth.Login(u, p);
-            if (user == null)
+        try
+        {
+            var availablePets = petService.GetAvailablePets();
+            foreach (var pet in availablePets)
             {
-                Console.WriteLine("❌ Pogrešni podaci.");
-                return;
+                var receipt = salesService.SellPet(pet);
+                Console.WriteLine($"Pet sold: {pet.Name}, Final price: {receipt.TotalAmount}");
             }
-
-            if (user.Role == Role.Manager)
-                ManagerMenu(petService);
-            else
-                SellerMenu(petService, fiscal, user.Username);
         }
         catch (Exception ex)
         {
-            FileLogService.AppendAllText("Data/log.txt", ex + "\n");
-            Console.WriteLine("❌ Greška u radu aplikacije.");
+            Console.WriteLine($"Error: {ex.Message}");
         }
-    }
 
-    static void ManagerMenu(PetService petService)
-    {
+        Session.CurrentUser = manager;
+
         try
         {
-            Console.Write("Ime ljubimca: ");
-            string name = Console.ReadLine();
-            Console.Write("Cena: ");
-            decimal price = decimal.Parse(Console.ReadLine());
-
-            petService.AddPet(new Pet
+            var allReceipts = salesService.GetAllReceipts();
+            Console.WriteLine("\nAll receipts:");
+            foreach (var r in allReceipts)
             {
-                Name = name,
-                Price = price,
-                Type = PetType.Mammal
-            });
-
-            Console.WriteLine("✅ Ljubimac dodat.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("❌ " + ex.Message);
-        }
-    }
-
-    static void SellerMenu(PetService petService, SalesService fiscal, string seller)
-    {
-        try
-        {
-            var pets = petService.GetAvailable().ToList();
-            if (!pets.Any())
-            {
-                Console.WriteLine("Nema dostupnih ljubimaca.");
-                return;
+                Console.WriteLine($"{r.Seller.Name} sold pet for {r.TotalAmount} at {r.DateTimeSale}");
             }
-
-            for (int i = 0; i < pets.Count; i++)
-                Console.WriteLine($"{i}. {pets[i].Name} - {pets[i].Price}");
-
-            Console.Write("Izaberi: ");
-            int choice = int.Parse(Console.ReadLine());
-
-            fiscal.Sell(
-                pets[choice].Id,
-                seller,
-                SaleServiceFactory.GetCurrent()
-            );
-
-            Console.WriteLine("✅ Prodaja uspešna.");
         }
         catch (Exception ex)
         {
-            Console.WriteLine("❌ " + ex.Message);
+            Console.WriteLine($"Error: {ex.Message}");
         }
+
+        Console.WriteLine("\nSimulation finished.");
     }
 }

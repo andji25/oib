@@ -1,39 +1,11 @@
-﻿using petShop.Model;
+﻿using petShop.Repository;
 using petShop.Services;
-using System;
-using System.Collections.Generic;
 
-public class NightSalesService : ISalesService
+public class NightSalesService : SalesService
 {
-    private readonly List<Receipt> receipts;
-
-    public NightSalesService(List<Receipt> receipts)
+    public NightSalesService(IReceiptRepository receiptRepository, ILogService logService) : base(receiptRepository, logService) { }
+    protected override decimal CalculateFinalAmount(decimal baseAmount)
     {
-        this.receipts = receipts;
-    }
-
-    public IReadOnlyCollection<Receipt> GetAllReceipts()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Receipt SellPet(Pet pet)
-    {
-        if (Session.CurrentUser == null || Session.CurrentUser.Role != Role.Seller)
-            throw new UnauthorizedAccessException();
-
-        pet.MarkAsSold();
-
-        int taxedAmount = (int)(pet.SellingPrice * 1.10);
-
-        var receipt = new Receipt(Session.CurrentUser, taxedAmount);
-        receipts.Add(receipt);
-
-        return receipt;
-    }
-
-    Receipt ISalesService.SellPet(Pet pet)
-    {
-        throw new NotImplementedException();
+        return baseAmount * 1.10m;
     }
 }

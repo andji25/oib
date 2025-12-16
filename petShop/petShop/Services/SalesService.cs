@@ -1,12 +1,20 @@
 ﻿using petShop.Model;
+using petShop.Repository;
 using System;
 using System.Collections.Generic;
 
 namespace petShop.Services
 {
-    public class SalesService : ISalesService
+    public abstract class SalesService : ISalesService
     {
-        private readonly List<Receipt> receipts = new List<Receipt>();
+        protected readonly IReceiptRepository receiptRepository;
+        protected readonly ILogService logService;
+        protected SalesService(IReceiptRepository receiptRepository, ILogService logService)
+        {
+            this.receiptRepository = receiptRepository;
+            this.logService = logService;
+        }
+        protected abstract decimal CalculateFinalAmount(decimal baseAmount);
         public Receipt SellPet(Pet pet)
         {
             if (Session.CurrentUser == null)
@@ -15,10 +23,17 @@ namespace petShop.Services
             if (Session.CurrentUser.Role != Role.Seller)
                 throw new UnauthorizedAccessException("Only seller can sell pets.");
 
+            if (pet.Sold)
+                throw new InvalidOperationException("Pet already sold.");
+
             pet.MarkAsSold();
 
-            Receipt receipt = new Receipt(Session.CurrentUser, pet.SellingPrice);
-            receipts.Add(receipt);
+            decimal finalAmount = CalculateFinalAmount(pet.SellingPrice);
+
+            Receipt receipt = new Receipt(Session.CurrentUser, finalAmount);
+            receiptRepository.Add(receipt);
+
+            logService.Log(LogType.INFO, $"Pet sold for {finalAmount}");
 
             return receipt;
         }
@@ -30,7 +45,7 @@ namespace petShop.Services
             if (Session.CurrentUser.Role != Role.Manager)
                 throw new UnauthorizedAccessException("Only manager can view receipts.");
 
-            return receipts.AsReadOnly();
+            return receiptRepository.GetAll().AsReadOnly();
         }
 
 

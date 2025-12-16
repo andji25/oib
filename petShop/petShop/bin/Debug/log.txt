@@ -1,0 +1,14 @@
+16.12.2025. 13:30:16: [INFO] Attempt to add pet
+16.12.2025. 13:30:16: [INFO] Pet added: Maca
+16.12.2025. 13:30:16: [INFO] Attempt to add pet
+16.12.2025. 13:30:16: [INFO] Pet added: Pas
+16.12.2025. 13:30:16: [INFO] Pet sold for 85,00
+16.12.2025. 13:30:16: [INFO] Pet sold for 170,00
+16.12.2025. 13:30:29: [INFO] Attempt to add pet
+16.12.2025. 13:30:29: [INFO] Pet added: Maca
+16.12.2025. 13:30:29: [INFO] Attempt to add pet
+16.12.2025. 13:30:29: [INFO] Pet added: Pas
+16.12.2025. 13:30:29: [INFO] Pet sold for 85,00
+16.12.2025. 13:30:29: [INFO] Pet sold for 170,00
+16.12.2025. 13:30:29: [INFO] Pet sold for 85,00
+16.12.2025. 13:30:29: [INFO] Pet sold for 170,00

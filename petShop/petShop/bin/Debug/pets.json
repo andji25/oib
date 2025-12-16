@@ -1,0 +1,34 @@
+[
+  {
+    "Id": "97c51a74-9552-447e-be05-dc5835c6b6cf",
+    "LatinName": "Felis catus",
+    "Name": "Maca",
+    "Species": 0,
+    "SellingPrice": 100,
+    "Sold": false
+  },
+  {
+    "Id": "d1f13259-516c-436b-ac25-15ac1a77a537",
+    "LatinName": "Canis lupus familiaris",
+    "Name": "Pas",
+    "Species": 0,
+    "SellingPrice": 200,
+    "Sold": false
+  },
+  {
+    "Id": "311965d9-738d-49a7-a4fe-b34b3a22006e",
+    "LatinName": "Felis catus",
+    "Name": "Maca",
+    "Species": 0,
+    "SellingPrice": 100,
+    "Sold": false
+  },
+  {
+    "Id": "364520a8-a1d5-4437-a946-8042e572d459",
+    "LatinName": "Canis lupus familiaris",
+    "Name": "Pas",
+    "Species": 0,
+    "SellingPrice": 200,
+    "Sold": false
+  }
+]
