@@ -7,6 +7,5 @@ namespace petShop.Repository
     {
         void Add(Pet pet);
         List<Pet> GetAll();
-        void Update(Pet pet);
     }
 }

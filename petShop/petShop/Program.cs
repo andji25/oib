@@ -2,6 +2,7 @@
 using petShop.Repository;
 using petShop.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 class Program
@@ -16,54 +17,146 @@ class Program
         IPetService petService = new PetService(petRepo, logService);
 
         ISalesService salesService = SalesServiceFactory.Create(receiptRepo, logService);
-        User manager = new User("manager1", "pass123", "Milan", "Markovic", Role.Manager);
-        User seller = new User("seller1", "pass123", "Jovana", "Jovic", Role.Seller);
 
-        Session.CurrentUser = manager;
-
-        try
-        {
-            petService.AddPet(new Pet("Felis catus", "Maca", Species.Mammal, 100));
-            petService.AddPet(new Pet("Canis lupus familiaris", "Pas", Species.Mammal, 200));
-            Console.WriteLine("Manager added pets successfully.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-        }
-
-        Session.CurrentUser = seller;
-
-        try
-        {
-            var availablePets = petService.GetAvailablePets();
-            foreach (var pet in availablePets)
+        List<User> users = new List<User>
             {
-                var receipt = salesService.SellPet(pet);
-                Console.WriteLine($"Pet sold: {pet.Name}, Final price: {receipt.TotalAmount}");
+                new User("manager", "man1", "Menadzer", "Antonijevic", Role.Manager),
+                new User("seller", "sel1", "Prodavac", "Antonijevic", Role.Seller)
+            };
+
+        IAuthService authService = new AuthService(users);
+
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("=== LOGIN ===");
+
+            Console.WriteLine("Username: ");
+            string username = Console.ReadLine();
+
+            Console.WriteLine("Password: ");
+            string password = Console.ReadLine();
+
+            try
+            {
+                authService.Login(username, password);
+
+                if (Session.CurrentUser.Role == Role.Manager)
+                    ManagerMenu(petService, salesService);
+                else
+                    SellerMenu(petService, salesService);
+                authService.Logout();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-        }
 
-        Session.CurrentUser = manager;
+    }
 
-        try
+    static void ManagerMenu(IPetService petService, ISalesService salesService)
+    {
+        while (true)
         {
-            var allReceipts = salesService.GetAllReceipts();
-            Console.WriteLine("\nAll receipts:");
-            foreach (var r in allReceipts)
+            Console.Clear();
+            Console.WriteLine("=== MANAGER MENU ===");
+            Console.WriteLine("1. Add pet");
+            Console.WriteLine("2. View all pets");
+            Console.WriteLine("3. View receipts");
+            Console.WriteLine("0. Logout");
+
+            string choice = Console.ReadLine();
+
+            try
             {
-                Console.WriteLine($"{r.Seller.Name} sold pet for {r.TotalAmount} at {r.DateTimeSale}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-        }
+                switch (choice)
+                {
+                    case "1":
+                        Console.Write("Latin name: ");
+                        string latin = Console.ReadLine();
 
-        Console.WriteLine("\nSimulation finished.");
+                        Console.Write("Name: ");
+                        string name = Console.ReadLine();
+
+                        Console.Write("Species (0-Mammal,1-Reptile,2-Rodent): ");
+                        Species species = (Species)int.Parse(Console.ReadLine());
+
+                        Console.Write("Price: ");
+                        decimal price = decimal.Parse(Console.ReadLine());
+
+                        petService.AddPet(new Pet(latin, name, species, price));
+                        Console.WriteLine("Pet added.");
+                        break;
+
+                    case "2":
+                        foreach (Pet p in petService.GetAllPets())
+                            Console.WriteLine($"{p.Name} - {p.Species} - Sold: {p.Sold}");
+                        break;
+
+                    case "3":
+                        foreach (Receipt r in salesService.GetAllReceipts())
+                            Console.WriteLine($"{r.Seller.Name} | {r.TotalAmount} | {r.DateTimeSale}");
+                        break;
+
+                    case "0":
+                        return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            Console.ReadKey();
+        }
+    }
+    static void SellerMenu(IPetService petService, ISalesService salesService)
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("=== SELLER MENU ===");
+            Console.WriteLine("1. View available pets");
+            Console.WriteLine("2. Sell pet");
+            Console.WriteLine("0. Logout");
+
+            string choice = Console.ReadLine();
+
+            try
+            {
+                switch (choice)
+                {
+                    case "1":
+                        foreach (Pet p in petService.GetAvailablePets())
+                            Console.WriteLine($"{p.Id} - {p.Name} - {p.SellingPrice}");
+                        break;
+
+                    case "2":
+                        List<Pet> pets = petService.GetAvailablePets().ToList();
+                        if (!pets.Any())
+                        {
+                            Console.WriteLine("No pets available.");
+                            break;
+                        }
+
+                        Pet pet = pets.First();
+                        Receipt receipt = salesService.SellPet(pet);
+
+                        Console.WriteLine($"Sold {pet.Name} for {receipt.TotalAmount}");
+                        break;
+
+                    case "0":
+                        return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            Console.ReadKey();
+        }
     }
 }

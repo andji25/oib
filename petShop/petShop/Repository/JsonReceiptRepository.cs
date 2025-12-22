@@ -1,17 +1,16 @@
-﻿using System;
+﻿using petShop.Model;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using petShop.Model;
 
 namespace petShop.Repository
 {
     public class JsonReceiptRepository : IReceiptRepository
     {
-        private const string FilePath = "receipts.json";
+        private const string FilePath = "../../../data/receipts.json";
         public void Add(Receipt receipt)
         {
-            var receipts = GetAll();
+            List<Receipt> receipts = GetAll();
             receipts.Add(receipt);
             Save(receipts);
         }
@@ -20,15 +19,19 @@ namespace petShop.Repository
             if (!File.Exists(FilePath))
                 return new List<Receipt>();
 
-            var json = File.ReadAllText(FilePath);
-            var receipts = JsonSerializer.Deserialize<List<Receipt>>(json);
+            string json = File.ReadAllText(FilePath);
 
-            return receipts ?? new List<Receipt>();
+            List<Receipt> receipts = JsonSerializer.Deserialize<List<Receipt>>(json);
+
+            if (receipts == null)
+                return new List<Receipt>();
+
+            return receipts;
         }
 
         private void Save(List<Receipt> receipts)
         {
-            var json = JsonSerializer.Serialize(receipts, new JsonSerializerOptions { WriteIndented = true });
+            string json = JsonSerializer.Serialize(receipts, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(FilePath, json);
         }
     }
