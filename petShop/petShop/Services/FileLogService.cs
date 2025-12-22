@@ -1,6 +1,6 @@
-﻿using System;
+﻿using petShop.Model;
+using System;
 using System.IO;
-using petShop.Model;
 
 namespace petShop.Services
 {

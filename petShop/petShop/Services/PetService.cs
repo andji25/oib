@@ -34,7 +34,7 @@ public class PetService : IPetService
             throw new UnauthorizedAccessException("Only manager can add pets.");
         }
 
-        var pets = petRepository.GetAll();
+        List<Pet> pets = petRepository.GetAll();
         if (pets.Count >= MaxPets)
         {
             logService.Log(LogType.WARNING, "Pet shop capacity exceeded");
@@ -47,16 +47,25 @@ public class PetService : IPetService
 
     public IReadOnlyCollection<Pet> GetAllPets()
     {
+        logService.Log(LogType.INFO, "Attempt to get all pets");
         if (Session.CurrentUser == null)
+        {
+            logService.Log(LogType.ERROR, "Get all pets failed - no user");
             throw new UnauthorizedAccessException();
+        }
 
         return petRepository.GetAll().AsReadOnly();
     }
 
     public IReadOnlyCollection<Pet> GetAvailablePets()
     {
+        logService.Log(LogType.INFO, "Attempt to get available pets");
+
         if (Session.CurrentUser == null)
+        {
+            logService.Log(LogType.ERROR, "Get available pets failed - no user");
             throw new UnauthorizedAccessException();
+        }
 
         return petRepository.GetAll().Where(p => !p.Sold).ToList().AsReadOnly();
     }

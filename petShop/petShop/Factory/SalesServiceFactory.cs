@@ -1,8 +1,6 @@
-﻿using petShop.Model;
-using petShop.Repository;
+﻿using petShop.Repository;
 using petShop.Services;
 using System;
-using System.Collections.Generic;
 
 public static class SalesServiceFactory
 {
