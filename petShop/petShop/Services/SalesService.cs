@@ -8,10 +8,12 @@ namespace petShop.Services
     public abstract class SalesService : ISalesService
     {
         protected readonly IReceiptRepository receiptRepository;
+        protected readonly IPetRepository petRepository;
         protected readonly ILogService logService;
-        protected SalesService(IReceiptRepository receiptRepository, ILogService logService)
+        protected SalesService(IReceiptRepository receiptRepository, IPetRepository petRepository, ILogService logService)
         {
             this.receiptRepository = receiptRepository;
+            this.petRepository = petRepository;
             this.logService = logService;
         }
         protected abstract decimal CalculateFinalAmount(decimal baseAmount);
@@ -38,6 +40,7 @@ namespace petShop.Services
             }
 
             pet.MarkAsSold();
+            petRepository.Update(pet);
 
             decimal finalAmount = CalculateFinalAmount(pet.SellingPrice);
 

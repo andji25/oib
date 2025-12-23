@@ -9,32 +9,48 @@ class Program
 {
     static void Main()
     {
-        IPetRepository petRepo = new JsonPetRepository();
-        IReceiptRepository receiptRepo = new JsonReceiptRepository();
+        IPetRepository petRepository = new JsonPetRepository();
+        IReceiptRepository receiptRepository = new JsonReceiptRepository();
 
         ILogService logService = new FileLogService();
 
-        IPetService petService = new PetService(petRepo, logService);
+        IPetService petService = new PetService(petRepository, logService);
 
-        ISalesService salesService = SalesServiceFactory.Create(receiptRepo, logService);
+        ISalesService salesService;
+        try
+        {
+            salesService = SalesServiceFactory.Create(receiptRepository, petRepository, logService);
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.WriteLine(ex.Message);
+            Console.WriteLine("Working hours: 08–22");
+            Console.ReadKey();
+            return;
+        }
+
 
         List<User> users = new List<User>
             {
-                new User("manager", "man1", "Menadzer", "Antonijevic", Role.Manager),
-                new User("seller", "sel1", "Prodavac", "Antonijevic", Role.Seller)
+                new User("manager", "man1", "Marko", "Markovic", Role.Manager),
+                new User("seller", "sel1", "Jovan", "Jovanic", Role.Seller)
             };
 
         IAuthService authService = new AuthService(users);
+
 
         while (true)
         {
             Console.Clear();
             Console.WriteLine("=== LOGIN ===");
+            Console.WriteLine("X. Exit");
 
-            Console.WriteLine("Username: ");
+            Console.Write("Username: ");
             string username = Console.ReadLine();
+            if (username.Equals("X", StringComparison.OrdinalIgnoreCase))
+                return;
 
-            Console.WriteLine("Password: ");
+            Console.Write("Password: ");
             string password = Console.ReadLine();
 
             try
@@ -45,9 +61,10 @@ class Program
                     ManagerMenu(petService, salesService);
                 else
                     SellerMenu(petService, salesService);
+
                 authService.Logout();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 Console.ReadKey();
@@ -80,11 +97,28 @@ class Program
                         Console.Write("Name: ");
                         string name = Console.ReadLine();
 
-                        Console.Write("Species (0-Mammal,1-Reptile,2-Rodent): ");
-                        Species species = (Species)int.Parse(Console.ReadLine());
+                        Species species;
+                        while (true)
+                        {
+                            Console.Write("Species (0-Mammal, 1-Reptile, 2-Rodent): ");
+                            string input = Console.ReadLine();
+
+                            if (int.TryParse(input, out int value) && Enum.IsDefined(typeof(Species), value))
+                            {
+                                species = (Species)value;
+                                break;
+                            }
+
+                            Console.WriteLine("Invalid species. Please enter 0, 1 or 2.");
+                        }
 
                         Console.Write("Price: ");
-                        decimal price = decimal.Parse(Console.ReadLine());
+                        decimal price;
+                        while (!decimal.TryParse(Console.ReadLine(), out price) || price <= 0)
+                        {
+                            Console.WriteLine("Invalid price. Enter positive number:");
+                        }
+
 
                         petService.AddPet(new Pet(latin, name, species, price));
                         Console.WriteLine("Pet added.");
@@ -114,7 +148,7 @@ class Program
                         else
                         {
                             foreach (Receipt r in salesService.GetAllReceipts())
-                                Console.WriteLine($"{r.Seller.Name} | {r.TotalAmount} | {r.DateTimeSale}");
+                                Console.WriteLine($"{r.Seller.Name} {r.Seller.Surname} | {r.TotalAmount} | {r.DateTimeSale}");
                         }
                         break;
 

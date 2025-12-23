@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text.Json.Serialization;
+
 
 namespace petShop.Model
 {
@@ -11,6 +13,16 @@ namespace petShop.Model
         public decimal SellingPrice { get; private set; }
         public bool Sold { get; private set; }
 
+        [JsonConstructor]
+        public Pet(Guid id, string latinName, string name, Species species, decimal sellingPrice, bool sold)
+        {
+            Id = id;
+            LatinName = latinName;
+            Name = name;
+            Species = species;
+            SellingPrice = sellingPrice;
+            Sold = sold;
+        }
         public Pet(string latinName, string name, Species species, decimal sellingPrice)
         {
             Id = Guid.NewGuid();
