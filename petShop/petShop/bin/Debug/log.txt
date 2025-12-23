@@ -12,3 +12,41 @@
 16.12.2025. 13:30:29: [INFO] Pet sold for 170,00
 16.12.2025. 13:30:29: [INFO] Pet sold for 85,00
 16.12.2025. 13:30:29: [INFO] Pet sold for 170,00
+16.12.2025. 13:36:33: [INFO] Attempt to add pet
+16.12.2025. 13:36:33: [INFO] Pet added: Maca
+16.12.2025. 13:36:33: [INFO] Attempt to add pet
+16.12.2025. 13:36:33: [INFO] Pet added: Pas
+16.12.2025. 13:36:33: [INFO] Pet sold for 85,00
+16.12.2025. 13:36:33: [INFO] Pet sold for 170,00
+16.12.2025. 13:36:33: [INFO] Pet sold for 85,00
+16.12.2025. 13:36:33: [INFO] Pet sold for 170,00
+16.12.2025. 13:36:33: [INFO] Pet sold for 85,00
+16.12.2025. 13:36:33: [INFO] Pet sold for 170,00
+16.12.2025. 13:37:08: [INFO] Attempt to add pet
+16.12.2025. 13:37:08: [INFO] Pet added: Maca
+16.12.2025. 13:37:08: [INFO] Attempt to add pet
+16.12.2025. 13:37:08: [INFO] Pet added: Pas
+16.12.2025. 13:37:08: [INFO] Pet sold for 85,00
+16.12.2025. 13:37:08: [INFO] Pet sold for 170,00
+16.12.2025. 13:37:08: [INFO] Pet sold for 85,00
+16.12.2025. 13:37:08: [INFO] Pet sold for 170,00
+16.12.2025. 13:37:08: [INFO] Pet sold for 85,00
+16.12.2025. 13:37:08: [INFO] Pet sold for 170,00
+16.12.2025. 13:37:08: [INFO] Pet sold for 85,00
+16.12.2025. 13:37:08: [INFO] Pet sold for 170,00
+23.12.2025. 11:18:56: [INFO] Attempt to get all pets
+23.12.2025. 11:19:00: [INFO] Attempt to get all receipts
+23.12.2025. 11:19:08: [INFO] Attempt to get available pets
+23.12.2025. 11:19:10: [INFO] Attempt to get available pets
+23.12.2025. 11:22:21: [INFO] Attempt to get all pets
+23.12.2025. 11:22:24: [INFO] Attempt to get all receipts
+23.12.2025. 11:22:36: [INFO] Attempt to get available pets
+23.12.2025. 11:22:38: [INFO] Attempt to get available pets
+23.12.2025. 12:29:30: [INFO] Attempt to add pet
+23.12.2025. 12:29:31: [INFO] Pet added: gg
+23.12.2025. 12:56:58: [INFO] Attempt to get available pets
+23.12.2025. 12:57:06: [INFO] Attempt to get available pets
+23.12.2025. 12:57:07: [INFO] Attempt to sell pet
+23.12.2025. 12:57:08: [INFO] Pet sold for 103,70.
+23.12.2025. 12:57:14: [INFO] Attempt to get available pets
+23.12.2025. 12:57:36: [INFO] Attempt to get available pets
