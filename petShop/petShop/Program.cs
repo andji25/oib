@@ -91,13 +91,31 @@ class Program
                         break;
 
                     case "2":
-                        foreach (Pet p in petService.GetAllPets())
-                            Console.WriteLine($"{p.Name} - {p.Species} - Sold: {p.Sold}");
+                        List<Pet> pets = petService.GetAllPets().ToList();
+
+                        if (!pets.Any())
+                        {
+                            Console.WriteLine("No pets available.");
+                        }
+                        else
+                        {
+                            foreach (Pet p in pets)
+                                Console.WriteLine($"{p.Name} - {p.Species} - Sold: {p.Sold}");
+                        }
                         break;
 
                     case "3":
-                        foreach (Receipt r in salesService.GetAllReceipts())
-                            Console.WriteLine($"{r.Seller.Name} | {r.TotalAmount} | {r.DateTimeSale}");
+                        List<Receipt> receipts = salesService.GetAllReceipts().ToList();
+
+                        if (!receipts.Any())
+                        {
+                            Console.WriteLine("No receipts available.");
+                        }
+                        else
+                        {
+                            foreach (Receipt r in salesService.GetAllReceipts())
+                                Console.WriteLine($"{r.Seller.Name} | {r.TotalAmount} | {r.DateTimeSale}");
+                        }
                         break;
 
                     case "0":
@@ -129,19 +147,50 @@ class Program
                 switch (choice)
                 {
                     case "1":
-                        foreach (Pet p in petService.GetAvailablePets())
-                            Console.WriteLine($"{p.Id} - {p.Name} - {p.SellingPrice}");
+                        List<Pet> availablePets = petService.GetAvailablePets().ToList();
+
+                        if (!availablePets.Any())
+                        {
+                            Console.WriteLine("No pets available.");
+                            break;
+                        }
+
+                        Console.WriteLine("Available pets:");
+                        for (int i = 0; i < availablePets.Count; i++)
+                        {
+                            Console.WriteLine($"{availablePets[i].Name} - {availablePets[i].SellingPrice}");
+                        }
                         break;
 
                     case "2":
                         List<Pet> pets = petService.GetAvailablePets().ToList();
+
                         if (!pets.Any())
                         {
                             Console.WriteLine("No pets available.");
                             break;
                         }
 
-                        Pet pet = pets.First();
+                        Console.WriteLine("Available pets:");
+                        for (int i = 0; i < pets.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1}. {pets[i].Name} - {pets[i].SellingPrice}");
+                        }
+
+                        Console.Write("Choose pet number to sell: ");
+                        if (!int.TryParse(Console.ReadLine(), out int choiceNumber))
+                        {
+                            Console.WriteLine("Invalid input.");
+                            break;
+                        }
+
+                        if (choiceNumber < 1 || choiceNumber > pets.Count)
+                        {
+                            Console.WriteLine("Number out of range.");
+                            break;
+                        }
+
+                        Pet pet = pets[choiceNumber - 1];
                         Receipt receipt = salesService.SellPet(pet);
 
                         Console.WriteLine($"Sold {pet.Name} for {receipt.TotalAmount}");

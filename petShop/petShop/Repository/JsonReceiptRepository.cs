@@ -7,7 +7,7 @@ namespace petShop.Repository
 {
     public class JsonReceiptRepository : IReceiptRepository
     {
-        private const string FilePath = "../../../data/receipts.json";
+        private const string FilePath = "Data/receipts.json";
         public void Add(Receipt receipt)
         {
             List<Receipt> receipts = GetAll();
